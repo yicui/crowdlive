@@ -1,0 +1,55 @@
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-10-25 16:11:33
+project --topLevelPackage edu.vanderbilt.drumbeat --projectName drumbeat --java 6 --packaging JAR
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-10-25 16:11:42
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-10-25 16:12:09
+jpa setup --provider HIBERNATE --database HYPERSONIC_IN_MEMORY 
+entity jpa --class ~.domain.Audio --testAutomatically
+field string --fieldName title --notNull
+field string --fieldName pathurl --notNull --unique
+field number --fieldName duration --type float --min 1
+field number --fieldName fps --type float --min 1 --max 50
+entity jpa --class ~.domain.Video --testAutomatically
+field string --fieldName title --notNull
+field string --fieldName pathurl --notNull --unique
+entity jpa --class ~.domain.Image --testAutomatically
+field string --fieldName title --notNull
+field string --fieldName pathurl --notNull --unique
+entity jpa --class ~.domain.Person --testAutomatically
+field string --fieldName email --unique --notNull
+field set --fieldName videos --type ~.domain.Video --class ~.domain.Audio --cardinality ONE_TO_MANY
+field reference --fieldName audio --type ~.domain.Audio --class ~.domain.Video
+field set --fieldName audios --type ~.domain.Audio --class ~.domain.Person --cardinality ONE_TO_MANY
+field reference --fieldName uploader --type ~.domain.Person --class ~.domain.Audio 
+field set --fieldName videos --type ~.domain.Video --class ~.domain.Person --cardinality ONE_TO_MANY
+field reference --fieldName uploader --type ~.domain.Person --class ~.domain.Video 
+field set --fieldName images --type ~.domain.Image --class ~.domain.Person --cardinality ONE_TO_MANY
+field reference --fieldName uploader --type ~.domain.Person --class ~.domain.Image 
+field set --fieldName images --type ~.domain.Image --class ~.domain.Video --cardinality MANY_TO_MANY
+interface --class ~.algo.Preprocessor
+class --class ~.algo.CooleyTukeyFFT_Preprocessor --extends ~.algo.Preprocessor --rooAnnotations
+class --class ~.algo.RaderFFT_Preprocessor --extends ~.algo.Preprocessor --rooAnnotations
+interface --class ~.algo.BeatDetector
+interface --class ~.io.Reader
+class --class ~.io.Wav_Reader --extends ~.io.Reader --rooAnnotations
+class --class ~.io.Log_Reader --extends ~.io.Reader --rooAnnotations
+// script --file drumbeat.roo
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-10-26 10:27:45
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-10-29 09:50:57
+focus --class ~.domain.Audio
+field number --fieldName frames --type int --min 1
+test stub --class ~.io.Reader
+test stub --class ~.io.Reader
+test stub --class ~.io.Log_Reader
+test stub --class ~.io.Log_Reader
+// [failed] test stub --class ~.io.DefaultReader
+field reference --fieldName audio --type ~.domain.Audio --class ~.io.Reader
+test stub --class ~.io.Log_Reader
+test stub --class ~.io.Reader
+focus --class ~.domain.Audio
+field number --fieldName audiodata --type int --transient
+focus --class ~.domain.Audio
+// [failed] field number --fieldName frame_size --type int --min 2
+// [failed] field number --fieldName frame_size --type int --min 2
+// [failed] field number --fieldName frame_size --type int --min 2 --class ~.domain.Audio
+field number --fieldName frame_size --type int --min 2
+test stub --class ~.io.Wav_Reader
