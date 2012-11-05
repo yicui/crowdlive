@@ -34,22 +34,6 @@ privileged aspect Audio_Roo_JavaBean {
         this.duration = duration;
     }
     
-    public int Audio.getFrames() {
-        return this.frames;
-    }
-    
-    public void Audio.setFrames(int frames) {
-        this.frames = frames;
-    }
-    
-    public int Audio.getFramesize() {
-        return this.framesize;
-    }
-    
-    public void Audio.setFramesize(int framesize) {
-        this.framesize = framesize;
-    }
-    
     public Set<Video> Audio.getVideos() {
         return this.videos;
     }

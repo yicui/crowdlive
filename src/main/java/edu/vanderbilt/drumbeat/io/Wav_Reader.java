@@ -19,48 +19,55 @@ public class Wav_Reader implements Reader {
 	@Autowired
 	private Audio audio;
 	
-	public void Input(String pathurl) throws Exception {
+	public void Input() {
 		ArrayList<int[]> data = new ArrayList<int[]>();		
-		File file = new File(pathurl);
-		AudioInputStream ais = AudioSystem.getAudioInputStream(file);
-		AudioFormat format = ais.getFormat();
-		// We set the default to be 512 samples per frame 
-		int framesize = 512;
-		int samplesize = ais.getFormat().getSampleSizeInBits()/8;
-		/* WAV file may be mono or stereo. In case of stereo, samples from both channels
-		   are often identical, so we only extract from one channel */
-		byte[] b = new byte[framesize*ais.getFormat().getFrameSize()];		
+		File file = new File(this.audio.getPathurl());
+		AudioInputStream ais;
+		AudioFormat format;
+		
+        try {
+    		ais = AudioSystem.getAudioInputStream(file);
+    		format = ais.getFormat();
+    		// We set the default to be 512 samples per frame 
+    		int framesize = 512;
+    		int samplesize = ais.getFormat().getSampleSizeInBits()/8;
+    		/* WAV file may be mono or stereo. In case of stereo, samples from both channels
+    		   are often identical, so we only extract from one channel */
+    		byte[] b = new byte[framesize*ais.getFormat().getFrameSize()];		
 
-        int i, j; 
-    	while(ais.read(b) != -1) {
-			int[] result = new int[framesize];
-            for (i = 0, j = 0; i < framesize; i++, j += ais.getFormat().getFrameSize()) {
-            	// two bytes per sample
-            	if (samplesize == 2) {
-            		result[i] = 0;
-    				for (int bytes = 0; bytes < 2; bytes ++) {
-    					int shift = (bytes+2) * 8;
-    					result[i] += (b[j+bytes] & 0x000000FF) << shift;
-    				}
-            	}
-            	// one byte per sample            	
-            	else if (samplesize == 1)
-            		result[i] = b[j];
-            	// four byte per sample            	            	
-            	else if (samplesize == 4) {
-            		result[i] = 0;
-    				for (int bytes = 0; bytes < 4; bytes ++) {
-    					int shift = bytes * 8;
-    					result[i] += (b[j+bytes] & 0x000000FF) << shift;
-    				}	                		
-            	}
-            }
-            data.add(result);
-    	}
+            int i, j; 
+
+            while(ais.read(b) != -1) {
+				int[] result = new int[framesize];
+				for (i = 0, j = 0; i < framesize; i++, j += ais.getFormat().getFrameSize()) {
+					// two bytes per sample
+	            	if (samplesize == 2) {
+	            		result[i] = 0;
+	    				for (int bytes = 0; bytes < 2; bytes ++) {
+	    					int shift = (bytes+2) * 8;
+	    					result[i] += (b[j+bytes] & 0x000000FF) << shift;
+	    				}
+	            	}
+	            	// one byte per sample            	
+	            	else if (samplesize == 1)
+	            		result[i] = b[j];
+	            	// four byte per sample            	            	
+	            	else if (samplesize == 4) {
+	            		result[i] = 0;
+	    				for (int bytes = 0; bytes < 4; bytes ++) {
+	    					int shift = bytes * 8;
+	    					result[i] += (b[j+bytes] & 0x000000FF) << shift;
+	    				}	                		
+	            	}
+	            }
+	            data.add(result);
+	    	}
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex); 
+		}
     	
 		// Set the Audio properties
-		this.audio.setFrames(data.size());
-		this.audio.setFramesize(framesize);
 		this.audio.setDuration((int)(ais.getFrameLength()*1000/format.getFrameRate()));
 		this.audio.setData(data);		
 	}	

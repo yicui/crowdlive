@@ -30,8 +30,6 @@ privileged aspect AudioDataOnDemand_Roo_DataOnDemand {
     public Audio AudioDataOnDemand.getNewTransientAudio(int index) {
         Audio obj = new Audio();
         setDuration(obj, index);
-        setFrames(obj, index);
-        setFramesize(obj, index);
         setPathurl(obj, index);
         setTitle(obj, index);
         return obj;
@@ -43,22 +41,6 @@ privileged aspect AudioDataOnDemand_Roo_DataOnDemand {
             duration = 1;
         }
         obj.setDuration(duration);
-    }
-    
-    public void AudioDataOnDemand.setFrames(Audio obj, int index) {
-        int frames = index;
-        if (frames < 1) {
-            frames = 1;
-        }
-        obj.setFrames(frames);
-    }
-    
-    public void AudioDataOnDemand.setFramesize(Audio obj, int index) {
-        int framesize = index;
-        if (framesize < 2) {
-            framesize = 2;
-        }
-        obj.setFramesize(framesize);
     }
     
     public void AudioDataOnDemand.setPathurl(Audio obj, int index) {

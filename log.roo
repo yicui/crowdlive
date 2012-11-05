@@ -53,3 +53,10 @@ focus --class ~.domain.Audio
 // [failed] field number --fieldName frame_size --type int --min 2 --class ~.domain.Audio
 field number --fieldName frame_size --type int --min 2
 test stub --class ~.io.Wav_Reader
+test stub --class ~.algo.RaderFFT_Preprocessor
+// [failed] test stub --class ~.algo.RaderFFT_Preprocessor
+test stub --class ~.algo.CooleyTukeyFFT_Preprocessor
+// [failed] test stub --class ~.algo.CooleyTukeyFFT_Preprocessor
+test stub --class ~.domain.Audio
+// [failed] test stub --class ~.domain.Audio
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-11-05 14:05:55

@@ -27,12 +27,6 @@ public class Audio {
     // Time length in milliseconds
     @Min(1L)
     private int duration;
-    // Number of frames
-    @Min(1L)
-    private int frames;
-    // number of samples per frame
-    @Min(2L)
-    private int framesize;
 
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Video> videos = new HashSet<Video>();
@@ -42,6 +36,8 @@ public class Audio {
 
     private transient ArrayList<int[]> data;
 
+    private transient ArrayList<int[]> processeddata;
+    
     private transient ArrayList<Float> beat;
 
     private transient ArrayList<ArrayList<Float>> candidatebeat;
@@ -51,7 +47,30 @@ public class Audio {
     }
 
     public void setData(ArrayList<int[]> data) {
-        this.data = data;
+        if (data.size() == 0)
+        	throw new RuntimeException("The audio dataset is empty");
+    	int framesize = data.get(0).length;
+
+    	for (int i = 1; i < data.size(); i ++)
+    		if (data.get(i).length != framesize) 
+    			throw new RuntimeException("The audio framesize is not consistent");
+
+    	this.data = data;    	
+    }
+
+    public ArrayList<int[]> getProcesseddata() {
+        return this.processeddata;
+    }
+
+    public void setProcesseddata(ArrayList<int[]> processeddata) {
+        if (this.data.size() != processeddata.size()) 
+        	throw new RuntimeException("The processed audio dataset has a different size from the original dataset");
+
+        for (int i = 1; i < data.size(); i ++)
+    		if (this.data.get(i).length != data.get(0).length)
+    			throw new RuntimeException("The processed audio framesize is not consistent");
+
+        this.processeddata = processeddata;
     }
 
     public ArrayList<java.lang.Float> getBeat() {
