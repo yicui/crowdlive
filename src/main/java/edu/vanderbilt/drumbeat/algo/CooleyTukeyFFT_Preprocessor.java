@@ -2,17 +2,18 @@ package edu.vanderbilt.drumbeat.algo;
 
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.javabean.RooJavaBean;
+import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
 
-import edu.vanderbilt.drumbeat.domain.Audio;
+import edu.vanderbilt.drumbeat.domain.Data;
 
+/* @author Yi Cui */
 @RooJavaBean
 @RooToString
-public class CooleyTukeyFFT_Preprocessor implements Preprocessor {
-	@Autowired
-	private Audio audio;
+@RooSerializable
+public class CooleyTukeyFFT_Preprocessor implements Filter {
+	private static final long serialVersionUID = 1L;	
 	
 	private static double M_PI=3.14159265358979323846;
 
@@ -151,25 +152,25 @@ public class CooleyTukeyFFT_Preprocessor implements Preprocessor {
 		}
 	}
 	
-	public void Process() {
-		ArrayList<int[]> data = this.audio.getData();
-		ArrayList<int[]> processed_data = new ArrayList<int[]>();
+	public void Process(Data data) {
+		ArrayList<int[]> dataset = data.getDataset();
+		ArrayList<int[]> processed_dataset = new ArrayList<int[]>();
 
 		int framesize = 0;
-		for (int index = 0; index < data.size(); index ++) {
-			if (data.get(index).length != framesize) {
-				framesize = data.get(index).length; 
+		for (int index = 0; index < dataset.size(); index ++) {
+			if (dataset.get(index).length != framesize) {
+				framesize = dataset.get(index).length; 
 		    	if (framesize == 0 || (framesize & (framesize - 1)) != 0)
 		    		throw new RuntimeException("The framesize is not power of 2");			
 				Initialize(framesize);
 			}
 			
 			// Apply weighting window
-			for(int i = 0; i < data.get(index).length; i += 2) {
+			for(int i = 0; i < dataset.get(index).length; i += 2) {
 				int dualCoef = (this.weightingWindow[i] & 0xffff) | ((int)(this.weightingWindow[i+1])<<16);
-				this.fftBuffer_real[i] = mul32_16b((int)(data.get(index)[i]) << 7, dualCoef) << 1;
+				this.fftBuffer_real[i] = mul32_16b((int)(dataset.get(index)[i]) << 7, dualCoef) << 1;
 				this.fftBuffer_imag[i] = 0;
-				this.fftBuffer_real[i+1] = mul32_16t((int)(data.get(index)[i+1]) << 7, dualCoef) << 1;
+				this.fftBuffer_real[i+1] = mul32_16t((int)(dataset.get(index)[i+1]) << 7, dualCoef) << 1;
 				this.fftBuffer_imag[i+1] = 0;
 			}
 			Radix2IntCplxFFT(this.fftBuffer_real, this.fftBuffer_imag, framesize, this.twiddleFactors, 1);
@@ -178,8 +179,8 @@ public class CooleyTukeyFFT_Preprocessor implements Preprocessor {
 			// Calculate squared magnitude spectrum
 			for(int i = 0; i < framesize/2; ++i)
 				outMagSpectrum[i] = (int)SquareMag(this.fftBuffer_real[i], this.fftBuffer_imag[i]);
-			processed_data.add(outMagSpectrum);
+			processed_dataset.add(outMagSpectrum);
 		}
-		this.audio.setProcesseddata(processed_data);
+		data.setDataset(processed_dataset);
 	}
 }

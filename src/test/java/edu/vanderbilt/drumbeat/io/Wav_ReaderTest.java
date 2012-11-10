@@ -6,7 +6,9 @@ import org.junit.Test;
 
 import edu.vanderbilt.drumbeat.domain.Audio;
 import edu.vanderbilt.drumbeat.domain.AudioDataOnDemand;
+import edu.vanderbilt.drumbeat.domain.DataManagerDefaultImpl;
 
+/* @author Yi Cui */
 public class Wav_ReaderTest {
 
     private Wav_Reader wav_Reader = new Wav_Reader();
@@ -16,6 +18,7 @@ public class Wav_ReaderTest {
     	AudioDataOnDemand dod = new AudioDataOnDemand();
     	Audio audio = dod.getNewTransientAudio(5);
     	audio.setPathurl("src/test/resources/testwav.wav");
+    	audio.setDatamanager(new DataManagerDefaultImpl());
     	wav_Reader.setAudio(audio);
     	// A correct WAV file
     	try {
@@ -25,9 +28,9 @@ public class Wav_ReaderTest {
 			org.junit.Assert.fail("Unexpected exception thrown " + e.getMessage());
 		}
     	org.junit.Assert.assertTrue(33697 == audio.getDuration());
-    	ArrayList<int[]> data = audio.getData();
-    	org.junit.Assert.assertTrue(2903 == data.size());
-    	org.junit.Assert.assertTrue(512 == data.get(0).length);
+    	ArrayList<int[]> dataset = audio.getDatamanager().peek().getDataset();
+    	org.junit.Assert.assertTrue(2903 == dataset.size());
+    	org.junit.Assert.assertTrue(512 == dataset.get(0).length);
     	
     	// An MP3 file
     }

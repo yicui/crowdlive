@@ -60,3 +60,37 @@ test stub --class ~.algo.CooleyTukeyFFT_Preprocessor
 test stub --class ~.domain.Audio
 // [failed] test stub --class ~.domain.Audio
 // Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-11-05 14:05:55
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-11-06 09:21:59
+class --class ~.algo.Seesaw_BeatDetector --extends ~.algo.BeatDetector --rooAnnotations
+// [failed] class --class ~.algo.Seesaw_BeatDetector --extends ~.algo.BeatDetector --rooAnnotations
+test stub --class ~.algo.Seesaw_BeatDetector
+// [failed] test stub --class ~.algo.Seesaw_BeatDetector
+test stub --class ~.algo.Seesaw_BeatDetector
+// [failed] test stub --class ~.algo.Seesaw_BeatDetector
+class --class ~.algo.Peak
+// [failed] class --class ~.algo.Peak
+interface --class ~.domain.FilterManager
+// [failed] interface --class ~.domain.FilterManager
+class --class ~.domain.FilterManagerDefaultImpl --extends ~.domain.FilterManager --rooAnnotations
+// [failed] class --class ~.domain.FilterManagerDefaultImpl --extends ~.domain.FilterManager --rooAnnotations
+class --class ~.domain.FilterManagerDefaultImpl --extends ~.domain.FilterManager --rooAnnotations
+// [failed] class --class ~.domain.FilterManagerDefaultImpl --extends ~.domain.FilterManager --rooAnnotations
+test stub --class ~.domain.FilterManagerDefaultImpl
+// [failed] test stub --class ~.domain.FilterManagerDefaultImpl
+// [failed] dod
+class --class ~.algo.Seesaw_Preprocessor --extends ~.algo.Preprocessor --rooAnnotations
+// [failed] class --class ~.algo.Seesaw_Preprocessor --extends ~.algo.Preprocessor --rooAnnotations
+test stub --class ~.algo.Seesaw_Preprocessor
+// [failed] test stub --class ~.algo.Seesaw_Preprocessor
+// [failed] class --class ~.domain.Data 
+// [failed] test stub --class ~.domain.Data
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-11-08 16:21:16
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-11-09 10:25:17
+class --class ~.algo.TrespassCountingFilter --extends ~.algo.Filter --rooAnnotations
+// [failed] class --class ~.algo.TrespassCountingFilter --extends ~.algo.Filter --rooAnnotations
+test stub --class ~.algo.TrespassCountingFilter
+// [failed] test stub --class ~.algo.TrespassCountingFilter
+class --class ~.algo.OrderStatisticFilter --extends ~.algo.Filter --rooAnnotations
+// [failed] class --class ~.algo.OrderStatisticFilter --extends ~.algo.Filter --rooAnnotations
+test stub --class ~.algo.OrderStatisticFilter
+// [failed] test stub --class ~.algo.OrderStatisticFilter

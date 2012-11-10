@@ -8,13 +8,18 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.javabean.RooJavaBean;
+import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
 
 import edu.vanderbilt.drumbeat.domain.Audio;
+import edu.vanderbilt.drumbeat.domain.Data;
 
+/* @author Yi Cui */
 @RooJavaBean
 @RooToString
+@RooSerializable
 public class Log_Reader implements Reader {
+	private static final long serialVersionUID = 1L;	
 	@Autowired
 	private Audio audio;
 	
@@ -24,7 +29,7 @@ public class Log_Reader implements Reader {
 		   where the hexadecimal string < ... > contains 2^n 4-byte integers  
 		   e.g., 2012-07-25 22:38:16.067 aurioTouch3[4036:707] <880f9bff 3551a3ff ...> */
 
-		ArrayList<int[]> data = new ArrayList<int[]>();
+		ArrayList<int[]> dataset = new ArrayList<int[]>();
 		int framesize = 0;
 		int result[];
 
@@ -66,12 +71,15 @@ public class Log_Reader implements Reader {
 						result[i] += (x & 0x000000FF) << shift;
 					}
 				}
-				data.add(result);
+				dataset.add(result);
 			}
 			reader.close();
 			// Set the Audio properties
 			this.audio.setDuration((int)(ending_timestamp.getTime() - beginning_timestamp.getTime()));
-			this.audio.setData(data);
+			this.audio.getDatamanager().clear();
+			Data data = new Data();
+			data.setDataset(dataset);
+			this.audio.getDatamanager().push(data);
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex); 

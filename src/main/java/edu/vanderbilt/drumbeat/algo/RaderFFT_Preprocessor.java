@@ -2,17 +2,18 @@ package edu.vanderbilt.drumbeat.algo;
 
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.javabean.RooJavaBean;
+import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
 
-import edu.vanderbilt.drumbeat.domain.Audio;
+import edu.vanderbilt.drumbeat.domain.Data;
 
+/* @author Yi Cui */
 @RooJavaBean
 @RooToString
-public class RaderFFT_Preprocessor implements Preprocessor {
-	@Autowired
-	private Audio audio;
+@RooSerializable
+public class RaderFFT_Preprocessor implements Filter {
+	private static final long serialVersionUID = 1L;
 	
     private float MINY;  
     private float[] real, imag, sintable, costable;  
@@ -51,14 +52,14 @@ public class RaderFFT_Preprocessor implements Preprocessor {
         }    	
     }
     
-	public void Process() {
-		ArrayList<int[]> data = this.audio.getData();
-		ArrayList<int[]> processed_data = new ArrayList<int[]>();
+	public void Process(Data data) {
+		ArrayList<int[]> dataset = data.getDataset();		
+		ArrayList<int[]> processed_dataset = new ArrayList<int[]>();
 
 		int framesize = 0;
-		for (int index = 0; index < data.size(); index ++) {
-			if (data.get(index).length != framesize) {
-				framesize = data.get(index).length; 
+		for (int index = 0; index < dataset.size(); index ++) {
+			if (dataset.get(index).length != framesize) {
+				framesize = dataset.get(index).length; 
 		    	if (framesize == 0 || (framesize & (framesize - 1)) != 0)
 		    		throw new RuntimeException("The framesize is not power of 2");			
 				Initialize(framesize);
@@ -66,7 +67,7 @@ public class RaderFFT_Preprocessor implements Preprocessor {
 	        int i, j, k, ir, exchanges = 1, idx = this.framesize_logarithm - 1;  
 	        float cosv, sinv, tmpr, tmpi;  
 	        for (i = 0; i != framesize; i++) {
-	        	this.real[i] = data.get(index)[this.bitReverse[i]];  
+	        	this.real[i] = dataset.get(index)[this.bitReverse[i]];  
 	        	this.imag[i] = 0;
 	        }
 	        
@@ -99,8 +100,8 @@ public class RaderFFT_Preprocessor implements Preprocessor {
 	            else
 	            	outMagSpectrum[i - 1] = (int)((tmpr * tmpr + tmpi * tmpi)/1e10);
 	        }
-			processed_data.add(outMagSpectrum);	        
+			processed_dataset.add(outMagSpectrum);	        
 		}
-		this.audio.setProcesseddata(processed_data);
+		data.setDataset(processed_dataset);
 	}
 }

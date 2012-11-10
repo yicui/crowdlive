@@ -6,7 +6,7 @@ import org.springframework.roo.addon.dod.RooDataOnDemand;
 
 @RooDataOnDemand(entity = Audio.class)
 public class AudioDataOnDemand {
-	private ArrayList<int[]> mockAudioData(int datasetsize, int framesize) {
+	public ArrayList<int[]> mockRandomAudioData(int datasetsize, int framesize) {
     	ArrayList<int[]> data = new ArrayList<int[]>();
 		for (int i = 0; i < datasetsize; i ++) {
 			int result[] = new int[framesize];
@@ -16,10 +16,23 @@ public class AudioDataOnDemand {
 		}
 		return data;
 	}
-    public void setData(Audio obj, int datasetsize, int framesize) {
-		obj.setData(mockAudioData(datasetsize, framesize));
-    }	
-    public void setProcesseddata(Audio obj, int datasetsize, int framesize) {
-		obj.setProcesseddata(mockAudioData(datasetsize, framesize));
-    }	
+	
+	public ArrayList<int[]> mockSequentialAudioData(int datasetsize, int framesize) {
+    	ArrayList<int[]> data = new ArrayList<int[]>();
+		for (int i = 0; i < datasetsize; i ++) {
+			int result[] = new int[framesize];
+			for (int j = 0; j < framesize; j ++)
+				result[j] = i*framesize+j;
+			data.add(result);
+		}
+		return data;
+	}
+
+	public void setDatamanager(Audio obj, ArrayList<int[]> dataset) {
+		DataManagerDefaultImpl dataManager = new DataManagerDefaultImpl();
+		Data data = new Data();
+		data.setDataset(dataset);
+		dataManager.push(data);
+		obj.setDatamanager(dataManager);
+	}
 }

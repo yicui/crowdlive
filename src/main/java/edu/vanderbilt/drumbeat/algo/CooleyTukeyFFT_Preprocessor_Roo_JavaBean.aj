@@ -4,17 +4,8 @@
 package edu.vanderbilt.drumbeat.algo;
 
 import edu.vanderbilt.drumbeat.algo.CooleyTukeyFFT_Preprocessor;
-import edu.vanderbilt.drumbeat.domain.Audio;
 
 privileged aspect CooleyTukeyFFT_Preprocessor_Roo_JavaBean {
-    
-    public Audio CooleyTukeyFFT_Preprocessor.getAudio() {
-        return this.audio;
-    }
-    
-    public void CooleyTukeyFFT_Preprocessor.setAudio(Audio audio) {
-        this.audio = audio;
-    }
     
     public short[] CooleyTukeyFFT_Preprocessor.getWeightingWindow() {
         return this.weightingWindow;

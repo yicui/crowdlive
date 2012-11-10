@@ -1,12 +1,11 @@
 package edu.vanderbilt.drumbeat.algo;
 
-import java.util.ArrayList;
-
 import org.junit.Test;
 
-import edu.vanderbilt.drumbeat.domain.Audio;
 import edu.vanderbilt.drumbeat.domain.AudioDataOnDemand;
+import edu.vanderbilt.drumbeat.domain.Data;
 
+/* @author Yi Cui */
 public class RaderFFT_PreprocessorTest {
 	
     private RaderFFT_Preprocessor raderFFT_Preprocessor = new RaderFFT_Preprocessor();
@@ -14,42 +13,25 @@ public class RaderFFT_PreprocessorTest {
     @Test
     public void Process() {
     	AudioDataOnDemand dod = new AudioDataOnDemand();
-    	Audio audio = dod.getNewTransientAudio(5);
-    	raderFFT_Preprocessor.setAudio(audio);
-
-    	// correct audio dataset
+    	Data data = new Data();
+    	data.setDataset(dod.mockRandomAudioData(100, 256));
+    	int oldDataframesize = data.getDataset().get(0).length;
+    	// correct audio dataset    	
     	try {
-    		audio.setDuration(3000);
-    		dod.setData(audio, 100, 256);
-    		raderFFT_Preprocessor.Process();
+    		this.raderFFT_Preprocessor.Process(data);
     	}
 		catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception thrown " + e.getMessage());
 		}
-    	ArrayList<int[]> fetched_processeddata = audio.getProcesseddata();
-    	ArrayList<int[]> fetched_data = audio.getData();
-    	org.junit.Assert.assertTrue(3000 == audio.getDuration());
-    	org.junit.Assert.assertTrue(fetched_processeddata.size() == fetched_data.size());
-    	for (int i = 0; i < fetched_processeddata.size(); i ++)
-    		org.junit.Assert.assertTrue(fetched_processeddata.get(i).length*2 == fetched_data.get(i).length);
+   		org.junit.Assert.assertTrue(data.getDataset().get(0).length*2 == oldDataframesize);
 
     	// audio dataset whose framesize is not power of 2
-    	try {
-    		dod.setData(audio, 100, 255);
-    		raderFFT_Preprocessor.Process();
+    	data.setDataset(dod.mockRandomAudioData(100, 255));
+		try {
+    		this.raderFFT_Preprocessor.Process(data);
     	}
 		catch (Exception e) {
 			org.junit.Assert.assertTrue("The framesize is not power of 2" == e.getMessage());
 		}
-    }
-    
-    @Test
-    public void getAudio() {
-        org.junit.Assert.assertTrue(true);
-    }
-
-    @Test
-    public void setAudio() {
-        org.junit.Assert.assertTrue(true);
     }
 }

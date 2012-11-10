@@ -9,18 +9,23 @@ import javax.sound.sampled.AudioSystem;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.javabean.RooJavaBean;
+import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
 
 import edu.vanderbilt.drumbeat.domain.Audio;
+import edu.vanderbilt.drumbeat.domain.Data;
 
+/* @author Yi Cui */
 @RooJavaBean
 @RooToString
+@RooSerializable
 public class Wav_Reader implements Reader {
+	private static final long serialVersionUID = 1L;	
 	@Autowired
 	private Audio audio;
 	
 	public void Input() {
-		ArrayList<int[]> data = new ArrayList<int[]>();		
+		ArrayList<int[]> dataset = new ArrayList<int[]>();		
 		File file = new File(this.audio.getPathurl());
 		AudioInputStream ais;
 		AudioFormat format;
@@ -60,7 +65,7 @@ public class Wav_Reader implements Reader {
 	    				}	                		
 	            	}
 	            }
-	            data.add(result);
+	            dataset.add(result);
 	    	}
 		}
 		catch (Exception ex) {
@@ -69,6 +74,9 @@ public class Wav_Reader implements Reader {
     	
 		// Set the Audio properties
 		this.audio.setDuration((int)(ais.getFrameLength()*1000/format.getFrameRate()));
-		this.audio.setData(data);		
-	}	
+		this.audio.getDatamanager().clear();		
+		Data data = new Data();
+		data.setDataset(dataset);
+		this.audio.getDatamanager().push(data);
+	}
 }
