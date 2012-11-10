@@ -27,22 +27,22 @@ public class OrderStatisticFilterTest {
 		}
     	org.junit.Assert.assertTrue(data.getDataset().get(0).length == oldDataframesize);
 
-    	// sequential audio dataset
-    	data.setDataset(dod.mockSequentialAudioData(100, 256));
-    	oldDataframesize = data.getDataset().get(0).length;   		
+    	// In case of asymptotic audio dataset, median filter should return the same dataset
+    	data.setDataset(dod.mockAsymptoticAudioData(100, 256));
     	try {
     		this.orderStatisticFilter.Process(data);
     	}
 		catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception thrown " + e.getMessage());
 		}
-    	for (int i = 1; i < data.getDataset().size()-1; i ++)
+    	for (int i = 0; i < data.getDataset().size()-1; i ++)
     		for (int index = 0; index < data.getDataset().get(i).length; index ++)
     			if (data.getDataset().get(i)[index] != i*data.getDataset().get(i).length+index)
     				org.junit.Assert.fail("Median filter fails to return the median value");
     	
     	// conflicting parameters
     	this.orderStatisticFilter.setKthLargest(9);
+    	data.setDataset(dod.mockRandomAudioData(100, 256));    	
 		try {
 			this.orderStatisticFilter.Process(data);
 		}

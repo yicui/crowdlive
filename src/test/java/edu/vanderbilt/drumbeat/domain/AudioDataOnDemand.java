@@ -17,7 +17,7 @@ public class AudioDataOnDemand {
 		return data;
 	}
 	
-	public ArrayList<int[]> mockSequentialAudioData(int datasetsize, int framesize) {
+	public ArrayList<int[]> mockAsymptoticAudioData(int datasetsize, int framesize) {
     	ArrayList<int[]> data = new ArrayList<int[]>();
 		for (int i = 0; i < datasetsize; i ++) {
 			int result[] = new int[framesize];

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.validation.constraints.Min;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.roo.addon.equals.RooEquals;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -13,6 +14,7 @@ import edu.vanderbilt.drumbeat.domain.Data;
 
 @RooJavaBean
 @RooToString
+@RooEquals
 @RooSerializable
 public class OrderStatisticFilter implements Filter {
 	private static final long serialVersionUID = 1L;	
@@ -121,7 +123,7 @@ public class OrderStatisticFilter implements Filter {
     			if ((counter1+counter2) != (this.window+1))
     				counter1 = 0;
 
-    			/* The first window/2 datapoints of of the first array & the last window/2 datapoints of the last array will leave empty,
+    			/* The last window/2 datapoints of the last array will leave empty,
     			 * since there is not enough datapoints to put them into the center of the window 
     			 */
     			if (index < this.window/2) {

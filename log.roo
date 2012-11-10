@@ -94,3 +94,21 @@ class --class ~.algo.OrderStatisticFilter --extends ~.algo.Filter --rooAnnotatio
 // [failed] class --class ~.algo.OrderStatisticFilter --extends ~.algo.Filter --rooAnnotations
 test stub --class ~.algo.OrderStatisticFilter
 // [failed] test stub --class ~.algo.OrderStatisticFilter
+class --class ~.algo.DCRejectionFilter --extends ~.algo.Filter --rooAnnotations
+// [failed] class --class ~.algo.DCRejectionFilter --extends ~.algo.Filter --rooAnnotations
+test stub --class ~.algo.DCRejectionFilter
+// [failed] test stub --class ~.algo.DCRejectionFilter
+test stub --class ~.algo.DCRejectionFilter
+// [failed] test stub --class ~.algo.DCRejectionFilter
+class --class ~.algo.CountingFilter --extends ~.algo.Filter --rooAnnotations
+// [failed] class --class ~.algo.CountingFilter --extends ~.algo.Filter --rooAnnotations
+test stub --class ~.algo.CountingFilter
+// [failed] test stub --class ~.algo.CountingFilter
+class --class ~.algo.DifferentialFilter --extends ~.algo.Filter --rooAnnotations
+// [failed] class --class ~.algo.DifferentialFilter --extends ~.algo.Filter --rooAnnotations
+test stub --class ~.algo.DifferentialFilter
+// [failed] test stub --class ~.algo.DifferentialFilter
+class --class ~.algo.LocalMaximaFilter --extends ~.algo.Filter --rooAnnotations
+// [failed] class --class ~.algo.LocalMaximaFilter --extends ~.algo.Filter --rooAnnotations
+test stub --class ~.algo.LocalMaximaFilter
+// [failed] test stub --class ~.algo.LocalMaximaFilter
