@@ -1,13 +1,15 @@
 package edu.vanderbilt.drumbeat.domain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.roo.addon.dod.RooDataOnDemand;
 
+/* @author Yi Cui */
 @RooDataOnDemand(entity = Audio.class)
 public class AudioDataOnDemand {
-	public ArrayList<int[]> mockRandomAudioData(int datasetsize, int framesize) {
-    	ArrayList<int[]> data = new ArrayList<int[]>();
+	public List<Object> mockRandomAudioData(int datasetsize, int framesize) {
+    	List<Object> data = new ArrayList<Object>();
 		for (int i = 0; i < datasetsize; i ++) {
 			int result[] = new int[framesize];
 			for (int j = 0; j < framesize; j ++)
@@ -17,8 +19,8 @@ public class AudioDataOnDemand {
 		return data;
 	}
 	
-	public ArrayList<int[]> mockAsymptoticAudioData(int datasetsize, int framesize) {
-    	ArrayList<int[]> data = new ArrayList<int[]>();
+	public List<Object> mockAsymptoticAudioData(int datasetsize, int framesize) {
+		List<Object> data = new ArrayList<Object>();
 		for (int i = 0; i < datasetsize; i ++) {
 			int result[] = new int[framesize];
 			for (int j = 0; j < framesize; j ++)
@@ -28,9 +30,9 @@ public class AudioDataOnDemand {
 		return data;
 	}
 
-	public void setDatamanager(Audio obj, ArrayList<int[]> dataset) {
-		DataManagerDefaultImpl dataManager = new DataManagerDefaultImpl();
-		Data data = new Data();
+	public void setDatamanager(Audio obj, List<Object> dataset) {
+		DefaultDataManager dataManager = new DefaultDataManager();
+		TransposableData data = new TransposableData();
 		data.setDataset(dataset);
 		dataManager.push(data);
 		obj.setDatamanager(dataManager);

@@ -3,8 +3,9 @@ package edu.vanderbilt.drumbeat.algo;
 import org.junit.Test;
 
 import edu.vanderbilt.drumbeat.domain.AudioDataOnDemand;
-import edu.vanderbilt.drumbeat.domain.Data;
+import edu.vanderbilt.drumbeat.domain.TransposableData;
 
+/* @author Yi Cui */
 public class LocalMaximaFilterTest {
 
     private LocalMaximaFilter localMaximaFilter = new LocalMaximaFilter();
@@ -14,17 +15,19 @@ public class LocalMaximaFilterTest {
     	this.localMaximaFilter.setWindow(17);
     	this.localMaximaFilter.setExpectedMaximaPosition(8);
     	AudioDataOnDemand dod = new AudioDataOnDemand();
-    	Data data = new Data();
+    	TransposableData data = new TransposableData();
     	data.setDataset(dod.mockRandomAudioData(100, 256));
-    	int oldDataframesize = data.getDataset().get(0).length;    	    	
+		int[] frame = (int[])data.getDataset().get(0);    		    	    	    	
+    	int oldDataframesize = frame.length;    	    	
     	// whether the filter returns dataset with the expected framesize
     	try {
     		this.localMaximaFilter.Process(data);
+    		frame = (int[])data.getDataset().get(0);    		
     	}
 		catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception thrown " + e.getMessage());
 		}
-    	org.junit.Assert.assertTrue(data.getDataset().get(0).length == oldDataframesize);
+    	org.junit.Assert.assertTrue(frame.length == oldDataframesize);
   	
     	// For asymptotic audio dataset, the same dataset should be returned when expectedMaximaPosition=0     	
     	data.setDataset(dod.mockAsymptoticAudioData(100, 256));
@@ -35,10 +38,11 @@ public class LocalMaximaFilterTest {
 		catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception thrown " + e.getMessage());
 		}
-    	for (int i = this.localMaximaFilter.getWindow()-1; i < data.getDataset().size(); i ++)
-    		for (int index = 0; index < data.getDataset().get(i).length; index ++)
-    			if (data.getDataset().get(i)[index] != i*data.getDataset().get(i).length+index)
-    				org.junit.Assert.fail("Median filter fails to return the median value");
+    	for (int i = this.localMaximaFilter.getWindow()-1; i < data.getDataset().size(); i ++) {
+			frame = (int[])data.getDataset().get(i);
+    		for (int index = 0; index < frame.length; index ++) 
+    			org.junit.Assert.assertTrue(frame[index] == i*frame.length+index);
+    	}
 
     	// the filter should return a dataset of total zero when given conflicting parameters
     	this.localMaximaFilter.setExpectedMaximaPosition(17);
@@ -49,9 +53,10 @@ public class LocalMaximaFilterTest {
 		catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception thrown " + e.getMessage());
 		}
-    	for (int i = 0; i < data.getDataset().size(); i ++)
-    		for (int index = 0; index < data.getDataset().get(i).length; index ++)
-    			if (data.getDataset().get(i)[index] != 0)
-    				org.junit.Assert.fail("Counter is positive when maxThreshold is even smaller than minThreshold");
+    	for (int i = 0; i < data.getDataset().size(); i ++) {
+			frame = (int[])data.getDataset().get(i);
+    		for (int index = 0; index < frame.length; index ++)
+   				org.junit.Assert.assertTrue(frame[index] == 0);
+    	}
     }
 }

@@ -3,13 +3,13 @@
 
 package edu.vanderbilt.drumbeat.domain;
 
-import edu.vanderbilt.drumbeat.domain.DataManagerDefaultImpl;
+import edu.vanderbilt.drumbeat.domain.TransposableData;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-privileged aspect DataManagerDefaultImpl_Roo_ToString {
+privileged aspect TransposableData_Roo_ToString {
     
-    public String DataManagerDefaultImpl.toString() {
+    public String TransposableData.toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
     

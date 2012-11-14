@@ -1,6 +1,7 @@
 package edu.vanderbilt.drumbeat.algo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.constraints.Min;
 
@@ -12,6 +13,15 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 import edu.vanderbilt.drumbeat.domain.Data;
 
+/** 
+ * @author yicui
+ * 
+ * This is the implementation of order statistics filter, which replaces each datapoint with the kth-largest value in its surrounding window.   
+ * So, min, max, and median filters are all its special cases. 
+ * You might wonder why I want to implement such a commonly used functionality in-house. 
+ * This is mainly because the code might end up running in a smart phone, which must be real-time, the least computing-intensive,  
+ * and easily portable for both Android (Java) and iOS (Objctive C) platforms.  
+ */
 @RooJavaBean
 @RooToString
 @RooEquals
@@ -26,12 +36,6 @@ public class OrderStatisticFilter implements Filter {
 	@Min(1L)	
 	private int kthLargest;
 
-	/* This is the implementation of order statistics filter, which replaces each datapoint with the kth-largest value in its surrounding window.   
-	 * So, min, max, and median filters are all its special cases. 
-	 * You might wonder why I want to implement such a commonly used functionality in-house. 
-	 * This is mainly because the code might end up running in a smart phone, which must be real-time, the least computing-intensive,  
-	 * and easily portable for both Android (Java) and iOS (Objctive C) platforms.  
-	*/
 	public void Process(Data data) {
 		/* Normally we do not interfere with users who throw in silly parameters that don't make sense.
 		 * We trust the user of this software to be smart people. They might do such things just for fun or curiosity.
@@ -40,18 +44,18 @@ public class OrderStatisticFilter implements Filter {
 		if (this.kthLargest > this.window)
 			throw new RuntimeException("k must not be bigger than the window size");
 		
-		ArrayList<int[]> dataset = data.getDataset();		
-		ArrayList<int[]> processed_dataset = new ArrayList<int[]>();
+		List<Object> dataset = data.getDataset();
+		List<Object> processed_dataset = new ArrayList<Object>();
 
 		@SuppressWarnings("unchecked")
 		DoublyLinkedList<Integer>[] filterRange = new DoublyLinkedList[this.window];
-    	for (int index = 0; index < this.window; index ++) 
-    		filterRange[index] = new DoublyLinkedList<Integer>();
-    	DoublyLinkedList<Integer> kthLargestNode = null;
-    	DoublyLinkedList<Integer> p, q;
+		for (int index = 0; index < this.window; index ++) 
+			filterRange[index] = new DoublyLinkedList<Integer>();
+		DoublyLinkedList<Integer> kthLargestNode = null;
+		DoublyLinkedList<Integer> p, q;
 
     	// Fill the initial filter this.window with value 0
-    	q = null;
+		q = null;
 		for (int index = 0; index < this.window; index ++) {
 			filterRange[index].value = 0;
 			filterRange[index].prev = q; filterRange[index].next = null;  
@@ -63,10 +67,11 @@ public class OrderStatisticFilter implements Filter {
 		for (int index = 1; index < this.kthLargest; index ++)
 			kthLargestNode = kthLargestNode.next;
     	
-    	int framesize = 0;
+		int framesize = 0;
 		for (int i = 0; i < dataset.size(); i ++) {
-			if (dataset.get(i).length != framesize) 
-				framesize = dataset.get(i).length;
+			int[] frame = (int[])dataset.get(i);			
+			if (frame.length != framesize) 
+				framesize = frame.length;
 			int[] filtered = new int[framesize];
 			
 			for (int index = 0; index < framesize; index ++) {
@@ -92,7 +97,7 @@ public class OrderStatisticFilter implements Filter {
     				counter1 = 0;
 
     			// insert the new node
-    			filterRange[index%this.window].value = dataset.get(i)[index];
+    			filterRange[index%this.window].value = frame[index];
     			if (filterRange[index%this.window].value < kthLargestNode.value) {
     				p = kthLargestNode; q = null;
     				while ((p != null) && (p.value > filterRange[index%this.window].value)) {
@@ -127,8 +132,10 @@ public class OrderStatisticFilter implements Filter {
     			 * since there is not enough datapoints to put them into the center of the window 
     			 */
     			if (index < this.window/2) {
-    				if (i > 0)
-    					processed_dataset.get(i-1)[processed_dataset.get(i-1).length-this.window/2+index] = kthLargestNode.value;
+    				if (i > 0) {
+    					int[] targetframe = (int[])processed_dataset.get(i-1);
+    					targetframe[targetframe.length-this.window/2+index] = kthLargestNode.value;
+    				}
     			}
     			else
     				filtered[index-this.window/2] = kthLargestNode.value;				

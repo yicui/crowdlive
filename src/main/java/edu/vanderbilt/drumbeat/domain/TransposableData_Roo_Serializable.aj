@@ -3,11 +3,11 @@
 
 package edu.vanderbilt.drumbeat.domain;
 
-import edu.vanderbilt.drumbeat.domain.DataManagerDefaultImpl;
+import edu.vanderbilt.drumbeat.domain.TransposableData;
 import java.io.Serializable;
 
-privileged aspect DataManagerDefaultImpl_Roo_Serializable {
+privileged aspect TransposableData_Roo_Serializable {
     
-    declare parents: DataManagerDefaultImpl implements Serializable;
+    declare parents: TransposableData implements Serializable;
     
 }

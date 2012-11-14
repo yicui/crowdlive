@@ -2,12 +2,14 @@ package edu.vanderbilt.drumbeat.io;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.roo.addon.equals.RooEquals;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -15,9 +17,15 @@ import org.springframework.roo.addon.tostring.RooToString;
 import edu.vanderbilt.drumbeat.domain.Audio;
 import edu.vanderbilt.drumbeat.domain.Data;
 
-/* @author Yi Cui */
+/**
+ * @author yicui
+ * 
+ * This reader retrieves audio data from the WAV file and passes into the Audio object.
+ */
+
 @RooJavaBean
 @RooToString
+@RooEquals
 @RooSerializable
 public class Wav_Reader implements Reader {
 	private static final long serialVersionUID = 1L;	
@@ -25,7 +33,7 @@ public class Wav_Reader implements Reader {
 	private Audio audio;
 	
 	public void Input() {
-		ArrayList<int[]> dataset = new ArrayList<int[]>();		
+		List<Object> dataset = new ArrayList<Object>();		
 		File file = new File(this.audio.getPathurl());
 		AudioInputStream ais;
 		AudioFormat format;
@@ -71,12 +79,11 @@ public class Wav_Reader implements Reader {
 		catch (Exception ex) {
 			throw new RuntimeException(ex); 
 		}
-    	
+
 		// Set the Audio properties
 		this.audio.setDuration((int)(ais.getFrameLength()*1000/format.getFrameRate()));
-		this.audio.getDatamanager().clear();		
-		Data data = new Data();
+		Data data = this.audio.getDatamanager().peek();
 		data.setDataset(dataset);
-		this.audio.getDatamanager().push(data);
+		this.audio.getDatamanager().update(data);
 	}
 }

@@ -1,6 +1,7 @@
 package edu.vanderbilt.drumbeat.algo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.constraints.Min;
 
@@ -12,7 +13,13 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 import edu.vanderbilt.drumbeat.domain.Data;
 
-/* @author Yi Cui */
+/** 
+ * @author yicui
+ * 
+ * This filter searches in the dataset for peaks fitting the width & volume thresholds defined above.
+ * Since the dataset can contain positive & negative values, it searches for both directions (summit & anti_summit).
+ * As a result, all data points are reset to zero except those carrying the summit values of the found peaks.   
+ */
 @RooJavaBean
 @RooToString
 @RooEquals
@@ -33,14 +40,10 @@ public class PeakFilter implements Filter {
     @Min(1L)
 	private int maxPeakVolume;
 
-	/* This filter searches in the dataset for peaks fitting the width & volume thresholds defined above.
-	 * Since the dataset can contain positive & negative values, it searches for both directions (summit & anti_summit).
-	 * As a result, all data points are reset to zero except those carrying the summit values of the found peaks.   
-	*/
 	public void Process(Data data) {
-		ArrayList<int[]> dataset = data.getDataset();		
-		ArrayList<int[]> processed_dataset = new ArrayList<int[]>();		
-
+		List<Object> dataset = data.getDataset();
+		List<Object> processed_dataset = new ArrayList<Object>();
+		
     	// fill the initial search range
 		int searchRange[] = new int[this.maxPeakWidth];
     	for (int i = 0; i < this.maxPeakWidth; i ++) 
@@ -52,16 +55,17 @@ public class PeakFilter implements Filter {
     	int anti_summit_value = 1;
 
     	int framesize = 0;
-		for (int i = 0; i < dataset.size(); i ++) {			
-			if (dataset.get(i).length != framesize) 
-				framesize = dataset.get(i).length; 
+		for (int i = 0; i < dataset.size(); i ++) {
+			int[] frame = (int[])dataset.get(i);						
+			if (frame.length != framesize) 
+				framesize = frame.length; 
 
 			int[] peaks = new int[framesize];
 
 			for (int index = 0; index < framesize; index ++) {
 				peaks[index] = 0;
-				searchRange[index%maxPeakWidth] = dataset.get(i)[index];
-    			
+				searchRange[index%maxPeakWidth] = frame[index];
+
     			// see if the old valley has expired 
     			if (index%maxPeakWidth == valley) 
     				valley = -1;

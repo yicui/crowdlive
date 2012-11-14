@@ -4,16 +4,16 @@
 package edu.vanderbilt.drumbeat.domain;
 
 import edu.vanderbilt.drumbeat.domain.Data;
-import edu.vanderbilt.drumbeat.domain.DataManagerDefaultImpl;
+import edu.vanderbilt.drumbeat.domain.DefaultDataManager;
 import java.util.Stack;
 
-privileged aspect DataManagerDefaultImpl_Roo_JavaBean {
+privileged aspect DefaultDataManager_Roo_JavaBean {
     
-    public Stack<Data> DataManagerDefaultImpl.getDatasets() {
+    public Stack<Data> DefaultDataManager.getDatasets() {
         return this.datasets;
     }
     
-    public void DataManagerDefaultImpl.setDatasets(Stack<Data> datasets) {
+    public void DefaultDataManager.setDatasets(Stack<Data> datasets) {
         this.datasets = datasets;
     }
     

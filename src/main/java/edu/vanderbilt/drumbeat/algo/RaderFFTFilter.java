@@ -1,6 +1,7 @@
 package edu.vanderbilt.drumbeat.algo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.roo.addon.equals.RooEquals;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -9,41 +10,51 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 import edu.vanderbilt.drumbeat.domain.Data;
 
-/* @author Yi Cui */
+/**
+ * @author yicui
+ * 
+ * This filter implements the Rader Fast Fourier Transformation.
+ * The resulting framesize is half of the original.
+ */
 @RooJavaBean
 @RooToString
 @RooEquals
 @RooSerializable
 public class RaderFFTFilter implements Filter {
 	private static final long serialVersionUID = 1L;
+
+	private transient int framesize;
+	private transient float MINY;  
+	private transient float[] real;  
+	private transient float[] imag;  
+	private transient float[] sintable;  
+	private transient float[] costable;  
+	private transient int[] bitReverse; 	    
+	private transient int framesize_logarithm;
 	
-    private float MINY;  
-    private float[] real, imag, sintable, costable;  
-    private int[] bitReverse;  
-    private int framesize_logarithm;
-	
-    private void Initialize(int framesize) {
-    	this.MINY = (float) ((framesize << 2) * Math.sqrt(2));
-    	this.real = new float[framesize];  
-    	this.imag = new float[framesize];  
-    	this.sintable = new float[framesize >> 1];  
-    	this.costable = new float[framesize >> 1];  
-    	this.bitReverse = new int[framesize];  
+	private void Initialize(int framesize) {
+    	// Initialize
+    	MINY = (float) ((framesize << 2) * Math.sqrt(2));
+    	real = new float[framesize];  
+    	imag = new float[framesize];  
+    	sintable = new float[framesize >> 1];  
+    	costable = new float[framesize >> 1];  
+    	bitReverse = new int[framesize];  
   
-    	this.framesize_logarithm = 0;
-        for (; framesize > 1; this.framesize_logarithm ++)
+    	framesize_logarithm = 0;
+        for (; framesize > 1; framesize_logarithm ++)
         	framesize >>= 1;
-        framesize = 1 << this.framesize_logarithm;
+        framesize = 1 << framesize_logarithm;
         
         int i, j, k, reve;  
         for (i = 0; i < framesize; i++) {  
             k = i;  
-            for (j = 0, reve = 0; j != this.framesize_logarithm; j++) {  
+            for (j = 0, reve = 0; j != framesize_logarithm; j++) {  
                 reve <<= 1;  
                 reve |= (k & 1);  
                 k >>>= 1;  
             }  
-            this.bitReverse[i] = reve;  
+            bitReverse[i] = reve;  
         }  
   
         double theta, dt = 2 * 3.14159265358979323846 / framesize;  
@@ -51,44 +62,41 @@ public class RaderFFTFilter implements Filter {
             theta = i * dt;  
             costable[i] = (float) Math.cos(theta);  
             sintable[i] = (float) Math.sin(theta);  
-        }    	
-    }
-    
-	/* This filter implements the Rader Fast Fourier Transformation
-	 * The resulting framesize is half of the original  
-	*/
-	public void Process(Data data) {
-		ArrayList<int[]> dataset = data.getDataset();		
-		ArrayList<int[]> processed_dataset = new ArrayList<int[]>();
+        }		
+	}
 
-		int framesize = 0;
+    public void Process(Data data) {
+		List<Object> dataset = data.getDataset();
+		List<Object> processed_dataset = new ArrayList<Object>();
+
 		for (int index = 0; index < dataset.size(); index ++) {
-			if (dataset.get(index).length != framesize) {
-				framesize = dataset.get(index).length;
+			int[] frame = (int[])dataset.get(index);									
+			if (frame.length != framesize) {
+				framesize = frame.length;
 				// The FFT algorithm requires the framesize to be positive and power of 2				
 		    	if (framesize == 0 || (framesize & (framesize - 1)) != 0)
-		    		throw new RuntimeException("The framesize is not power of 2");			
-				Initialize(framesize);
+		    		throw new RuntimeException("The framesize is not power of 2");
+		    	Initialize(framesize);
 			}
-	        int i, j, k, ir, exchanges = 1, idx = this.framesize_logarithm - 1;  
+	        int i, j, k, ir, exchanges = 1, idx = framesize_logarithm - 1;  
 	        float cosv, sinv, tmpr, tmpi;  
 	        for (i = 0; i != framesize; i++) {
-	        	this.real[i] = dataset.get(index)[this.bitReverse[i]];  
-	        	this.imag[i] = 0;
+	        	real[i] = frame[bitReverse[i]];  
+	        	imag[i] = 0;
 	        }
 	        
-	        for (i = this.framesize_logarithm; i != 0; i--) {  
+	        for (i = framesize_logarithm; i != 0; i--) {  
 	            for (j = 0; j != exchanges; j++) {  
-	                cosv = this.costable[j << idx];  
-	                sinv = this.sintable[j << idx];  
-	                for (k = j; k < this.framesize_logarithm; k += exchanges << 1) {  
+	                cosv = costable[j << idx];  
+	                sinv = sintable[j << idx];  
+	                for (k = j; k < framesize_logarithm; k += exchanges << 1) {  
 	                    ir = k + exchanges;  
-	                    tmpr = cosv * this.real[ir] - sinv * this.imag[ir];  
-	                    tmpi = cosv * this.imag[ir] + sinv * this.real[ir];  
-	                    this.real[ir] = this.real[k] - tmpr;  
-	                    this.imag[ir] = this.imag[k] - tmpi;  
-	                    this.real[k] += tmpr;  
-	                    this.imag[k] += tmpi;  
+	                    tmpr = cosv * real[ir] - sinv * imag[ir];  
+	                    tmpi = cosv * imag[ir] + sinv * real[ir];  
+	                    real[ir] = real[k] - tmpr;  
+	                    imag[ir] = imag[k] - tmpi;  
+	                    real[k] += tmpr;  
+	                    imag[k] += tmpi;  
 	                }
 	            }
 	            exchanges <<= 1;  
@@ -96,11 +104,11 @@ public class RaderFFTFilter implements Filter {
 	        }
 	        
 			int[] outMagSpectrum = new int[framesize/2];	            
-	        sinv = this.MINY;  
-	        cosv = -this.MINY;
+	        sinv = MINY;  
+	        cosv = -MINY;
 	        for (i = framesize/2; i != 0; i--) {  
-	            tmpr = this.real[i];  
-	            tmpi = this.imag[i];  
+	            tmpr = real[i];  
+	            tmpi = imag[i];  
 	            if (tmpr > cosv && tmpr < sinv && tmpi > cosv && tmpi < sinv)  
 	            	outMagSpectrum[i - 1] = 0;  
 	            else

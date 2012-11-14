@@ -1,6 +1,9 @@
 package edu.vanderbilt.drumbeat.io;
 
-/* @author Yi Cui */
+/**
+ * @author yicui
+ *
+ */
 public interface Reader {
 	public void Input();
 }

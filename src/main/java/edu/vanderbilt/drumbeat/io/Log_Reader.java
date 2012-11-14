@@ -5,8 +5,10 @@ import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.roo.addon.equals.RooEquals;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -14,9 +16,19 @@ import org.springframework.roo.addon.tostring.RooToString;
 import edu.vanderbilt.drumbeat.domain.Audio;
 import edu.vanderbilt.drumbeat.domain.Data;
 
-/* @author Yi Cui */
+/**
+ * @author yicui
+ * 
+ * This reader retrieves audio data from the log file and passes into the Audio object.
+ * Each line of the log file represents an audio frame, 
+ * the format is yyyy-mm-dd hh:mm:ss.xxx appname <0xdddddddd 0xdddddddd ...>
+ * where the hexadecimal string < ... > contains 2^n 4-byte integers
+ * e.g., 2012-07-25 22:38:16.067 aurioTouch3[4036:707] <880f9bff 3551a3ff ...>
+ */
+
 @RooJavaBean
 @RooToString
+@RooEquals
 @RooSerializable
 public class Log_Reader implements Reader {
 	private static final long serialVersionUID = 1L;	
@@ -24,12 +36,7 @@ public class Log_Reader implements Reader {
 	private Audio audio;
 	
 	public void Input() {
-		/* Each line of the log file represents an audio frame, 
-		   the format is yyyy-mm-dd hh:mm:ss.xxx appname <0xdddddddd 0xdddddddd ...>
-		   where the hexadecimal string < ... > contains 2^n 4-byte integers  
-		   e.g., 2012-07-25 22:38:16.067 aurioTouch3[4036:707] <880f9bff 3551a3ff ...> */
-
-		ArrayList<int[]> dataset = new ArrayList<int[]>();
+		List<Object> dataset = new ArrayList<Object>();
 		int framesize = 0;
 		int result[];
 
@@ -76,10 +83,9 @@ public class Log_Reader implements Reader {
 			reader.close();
 			// Set the Audio properties
 			this.audio.setDuration((int)(ending_timestamp.getTime() - beginning_timestamp.getTime()));
-			this.audio.getDatamanager().clear();
-			Data data = new Data();
+			Data data = this.audio.getDatamanager().peek();
 			data.setDataset(dataset);
-			this.audio.getDatamanager().push(data);
+			this.audio.getDatamanager().update(data);
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex); 

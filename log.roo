@@ -112,3 +112,18 @@ class --class ~.algo.LocalMaximaFilter --extends ~.algo.Filter --rooAnnotations
 // [failed] class --class ~.algo.LocalMaximaFilter --extends ~.algo.Filter --rooAnnotations
 test stub --class ~.algo.LocalMaximaFilter
 // [failed] test stub --class ~.algo.LocalMaximaFilter
+// [failed] interface --class ~.ui.View
+// [failed] interface --class ~.ui.Drawer
+test stub --class ~.ui.TransposableDataVisualizer
+// [failed] test stub --class ~.ui.TransposableDataVisualizer
+test stub --class ~.ui.CompositeDataVisualizer
+// [failed] test stub --class ~.ui.CompositeDataVisualizer
+// [failed] test stub --class ~.ui.TransposableDataVisualizer
+test stub --class ~.ui.CompositeDataVisualizer
+// [failed] test stub --class ~.ui.CompositeDataVisualizer
+test stub --class ~.ui.TransposableDataVisualizer
+// [failed] test stub --class ~.ui.TransposableDataVisualizer
+test stub --class ~.ui.CompositeDataVisualizer
+// [failed] test stub --class ~.ui.CompositeDataVisualizer
+test stub --class ~.ui.CompositeDataVisualizer
+// [failed] test stub --class ~.ui.CompositeDataVisualizer

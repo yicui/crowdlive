@@ -1,37 +1,38 @@
 package edu.vanderbilt.drumbeat.domain;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
-public class DataManagerDefaultImplTest {
+/* @author Yi Cui */
+public class DefaultDataManagerTest {
 
-    private DataManagerDefaultImpl dataManagerDefaultImpl = new DataManagerDefaultImpl();
+    private DefaultDataManager dataManager = new DefaultDataManager();
 	private AudioDataOnDemand dod = new AudioDataOnDemand();
 	
-	private void pushNewdata(ArrayList<int[]> dataset) {
-		Data data = new Data();
+	private void pushNewdata(List<Object> dataset) {
+		TransposableData data = new TransposableData();
 		data.setDataset(dataset);
-		this.dataManagerDefaultImpl.push(data);		
+		this.dataManager.push(data);		
 	}
 
-	private void updateData(ArrayList<int[]> dataset) {
-		Data data = new Data();
+	private void updateData(List<Object> dataset) {
+		TransposableData data = new TransposableData();
 		data.setDataset(dataset);
-		this.dataManagerDefaultImpl.update(data);		
+		this.dataManager.update(data);		
 	}
 
 	@Test
     public void push() {
 		// Push a dataset to the empty stack of dataManager
-		this.dataManagerDefaultImpl.clear();
+		this.dataManager.clear();
     	try {
     		pushNewdata(this.dod.mockRandomAudioData(100, 256));
 		}
 		catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception thrown " + e.getMessage());
 		}
-    	ArrayList<int[]> fetched_dataset = this.dataManagerDefaultImpl.peek().getDataset();
+    	List<Object> fetched_dataset = this.dataManager.peek().getDataset();
 
     	// two datasets point to the same place in memory
 		try {
@@ -42,7 +43,7 @@ public class DataManagerDefaultImplTest {
 		}
     	
 		// dataset has different size from its predecessor 
-		ArrayList<int[]> newdataset = this.dod.mockRandomAudioData(50, 256);
+		List<Object> newdataset = this.dod.mockRandomAudioData(50, 256);
 		try {
     		pushNewdata(newdataset);    		
 		}
@@ -51,24 +52,26 @@ public class DataManagerDefaultImplTest {
 		}
 		
     	// A correct dataset with diffrent framesize to its predecessor dataset 
-		int oldsize = this.dataManagerDefaultImpl.size();
+		int oldsize = this.dataManager.size();
+		int[] frame = new int[1];
     	try {
     		pushNewdata(this.dod.mockRandomAudioData(100, 255));
+        	fetched_dataset = this.dataManager.peek().getDataset();
+        	frame = (int[])fetched_dataset.get(0);
 		}
 		catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception thrown " + e.getMessage());
 		}
-    	fetched_dataset = this.dataManagerDefaultImpl.peek().getDataset();
     	org.junit.Assert.assertTrue(fetched_dataset.size() == 100);
-    	org.junit.Assert.assertTrue(fetched_dataset.get(0).length == 255);
-    	org.junit.Assert.assertTrue(this.dataManagerDefaultImpl.size() == oldsize+1);    	
+    	org.junit.Assert.assertTrue(frame.length == 255);
+    	org.junit.Assert.assertTrue(this.dataManager.size() == oldsize+1);    	
     }
 
     @Test
     public void update() {
     	// Update to an empty dataManager
-		this.dataManagerDefaultImpl.clear();    	
-    	ArrayList<int[]> newdataset = this.dod.mockRandomAudioData(100, 256); 
+		this.dataManager.clear();    	
+		List<Object> newdataset = this.dod.mockRandomAudioData(100, 256); 
     	try {
     		updateData(newdataset);
     	}
@@ -82,7 +85,7 @@ public class DataManagerDefaultImplTest {
 		catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception thrown " + e.getMessage());
 		}
-    	ArrayList<int[]> fetched_dataset = this.dataManagerDefaultImpl.peek().getDataset();
+		List<Object> fetched_dataset = this.dataManager.peek().getDataset();
 		// update the dataset with different size
 		try {
 			updateData(this.dod.mockRandomAudioData(50, 256));
@@ -93,17 +96,19 @@ public class DataManagerDefaultImplTest {
     	// Update the current dataset with diffrent framesize
 		for (int i = 0; i < newdataset.size(); i ++)
 			newdataset.set(i, new int[64]);		
-		int oldsize = this.dataManagerDefaultImpl.size();
+		int oldsize = this.dataManager.size();
+		int[] frame = new int[1];
     	try {
     		updateData(this.dod.mockRandomAudioData(100, 255));
+        	fetched_dataset = this.dataManager.peek().getDataset();
+        	frame = (int[])fetched_dataset.get(0);
 		}
 		catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception thrown " + e.getMessage());
 		}
-    	fetched_dataset = this.dataManagerDefaultImpl.peek().getDataset();
     	org.junit.Assert.assertTrue(fetched_dataset.size() == 100);
-    	org.junit.Assert.assertTrue(fetched_dataset.get(0).length == 255);
-    	org.junit.Assert.assertTrue(this.dataManagerDefaultImpl.size() == oldsize);    	
+    	org.junit.Assert.assertTrue(frame.length == 255);
+    	org.junit.Assert.assertTrue(this.dataManager.size() == oldsize);    	
     }
     
     @Test

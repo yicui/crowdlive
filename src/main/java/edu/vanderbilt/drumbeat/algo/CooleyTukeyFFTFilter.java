@@ -1,6 +1,7 @@
 package edu.vanderbilt.drumbeat.algo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.roo.addon.equals.RooEquals;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -9,21 +10,25 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 import edu.vanderbilt.drumbeat.domain.Data;
 
-/* @author Yi Cui */
+/** 
+ * @author yicui
+ * 
+ * This filter implements the Coolley-Tokey Fast Fourier Transformation.
+ * The resulting framesize is half of the original. 
+ */	
 @RooJavaBean
 @RooToString
 @RooEquals
 @RooSerializable
 public class CooleyTukeyFFTFilter implements Filter {
 	private static final long serialVersionUID = 1L;	
-	
-	private static double M_PI=3.14159265358979323846;
 
 	// spectrum analysis
-	private short[] weightingWindow;
-	private int[] fftBuffer_real;
-	private int[] fftBuffer_imag;
-	private int[] twiddleFactors;
+	private transient int framesize;		
+	private transient short[] weightingWindow;
+	private transient int[] fftBuffer_real;
+	private transient int[] fftBuffer_imag;
+	private transient int[] twiddleFactors;
 	
 	// utility functions
 	private static final int mul32_16b(int a, int b) {
@@ -128,20 +133,22 @@ public class CooleyTukeyFFTFilter implements Filter {
 			strides >>= 1;		
 		} while(span < size);
 	}
-	
-	private void Initialize(int framesize) {
-		this.weightingWindow = new short[framesize];
+
+	public void Initialize(int framesize) {
+		double M_PI=3.14159265358979323846;
+		
+		weightingWindow = new short[framesize];
 		for(int i = 0; i < framesize/2; ++i) {
 			/* Hamming window */
 			float w = (float) (0.53836-0.46164*Math.cos(2.0*M_PI*i/(double)(framesize)));
-			this.weightingWindow[i] = (short)(Math.pow(2.0, 15.0)*w);				
-			this.weightingWindow[framesize-i-1] = this.weightingWindow[i];
+			weightingWindow[i] = (short)(Math.pow(2.0, 15.0)*w);				
+			weightingWindow[framesize-i-1] = weightingWindow[i];
 		}
 		
-		this.fftBuffer_real = new int[framesize]; // assumed to be initialized as 0
-		this.fftBuffer_imag = new int[framesize]; // assumed to be initialized as 0
+		fftBuffer_real = new int[framesize]; // assumed to be initialized as 0
+		fftBuffer_imag = new int[framesize]; // assumed to be initialized as 0
 		
-		this.twiddleFactors = new int[framesize];
+		twiddleFactors = new int[framesize];
 		float scaleFac = (float)(1<<15);
 		for(int i = 0; i < framesize/2; ++i) {
 			int cosSin;
@@ -150,41 +157,38 @@ public class CooleyTukeyFFTFilter implements Filter {
 			cosSin = FloatToInt16(tmp) << 16;
 			tmp = -scaleFac*(float)Math.sin(2.0*M_PI*i/framesize);
 			cosSin |= FloatToInt16(tmp) & 0x0000ffff;
-			this.twiddleFactors[i] = cosSin;
-		}
+			twiddleFactors[i] = cosSin;
+		}		
 	}
 	
-	/* This filter implements the Coolley-Tokey Fast Fourier Transformation
-	 * The resulting framesize is half of the original  
-	*/	
 	public void Process(Data data) {
-		ArrayList<int[]> dataset = data.getDataset();
-		ArrayList<int[]> processed_dataset = new ArrayList<int[]>();
+		List<Object> dataset = data.getDataset();
+		List<Object> processed_dataset = new ArrayList<Object>();
 
-		int framesize = 0;
 		for (int index = 0; index < dataset.size(); index ++) {
-			if (dataset.get(index).length != framesize) {
-				framesize = dataset.get(index).length;
+			int[] frame = (int[])dataset.get(index);
+			if (frame.length != framesize) {
+				framesize = frame.length;
 				// The FFT algorithm requires the framesize to be positive and power of 2
 		    	if (framesize == 0 || (framesize & (framesize - 1)) != 0)
-		    		throw new RuntimeException("The framesize is not power of 2");			
-				Initialize(framesize);
+		    		throw new RuntimeException("The framesize is not power of 2");	
+		    	Initialize(framesize);
 			}
-			
+
 			// Apply weighting window
-			for(int i = 0; i < dataset.get(index).length; i += 2) {
-				int dualCoef = (this.weightingWindow[i] & 0xffff) | ((int)(this.weightingWindow[i+1])<<16);
-				this.fftBuffer_real[i] = mul32_16b((int)(dataset.get(index)[i]) << 7, dualCoef) << 1;
-				this.fftBuffer_imag[i] = 0;
-				this.fftBuffer_real[i+1] = mul32_16t((int)(dataset.get(index)[i+1]) << 7, dualCoef) << 1;
-				this.fftBuffer_imag[i+1] = 0;
+			for(int i = 0; i < frame.length; i += 2) {
+				int dualCoef = (weightingWindow[i] & 0xffff) | ((int)(weightingWindow[i+1])<<16);
+				fftBuffer_real[i] = mul32_16b((int)(frame[i]) << 7, dualCoef) << 1;
+				fftBuffer_imag[i] = 0;
+				fftBuffer_real[i+1] = mul32_16t((int)(frame[i+1]) << 7, dualCoef) << 1;
+				fftBuffer_imag[i+1] = 0;
 			}
-			Radix2IntCplxFFT(this.fftBuffer_real, this.fftBuffer_imag, framesize, this.twiddleFactors, 1);
+			Radix2IntCplxFFT(fftBuffer_real, fftBuffer_imag, framesize, twiddleFactors, 1);
 			
 			int[] outMagSpectrum = new int[framesize/2];
 			// Calculate squared magnitude spectrum
 			for(int i = 0; i < framesize/2; ++i)
-				outMagSpectrum[i] = (int)SquareMag(this.fftBuffer_real[i], this.fftBuffer_imag[i]);
+				outMagSpectrum[i] = (int)SquareMag(fftBuffer_real[i], fftBuffer_imag[i]);
 			processed_dataset.add(outMagSpectrum);
 		}
 		data.setDataset(processed_dataset);
