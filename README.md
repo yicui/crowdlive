@@ -24,9 +24,24 @@ number indicates the actual audio frame index. Of course, the visual cue can be 
 [this one](http://www.youtube.com/watch?v=cPQ_A8HPJp4).
 
 One funny thing is, everytime I showed my colored-square video to my UMG friend, I can sense his dissatisfaction. 
-This usually triggered a speech of mine on the great challenge this problem and how fast we are improving. But then I
+This usually triggered a speech of mine on the great challenge of this problem and how fast we are improving. But then I
 found out he was mostly complaining about the aesthetics of my visual presentation, Duh! We were on thinking different 
 tracks, me on the accuracy of the algorithm and him on how amazing the app should look. Then it occured to me that a
-tool like http://slides.com should be very helpful here: it leave artists alone to try out various visual effects,
+tool like http://slides.com should be very helpful here: it leaves artists alone to try out various visual effects,
 until they are happy with what they see.
 
+A multi-module Project
+----------------------
+Right now the project is in a standstill since both of us have many duties with higher priorities to fulfill. Making
+sense or not, I think it's better to share this idea, and carry it some extra miles to the point that my fellow
+programmers can recognize what we've been doing.
+
+Two groups of users might be interested in this project: *researchers* who want to design better beat recognition 
+algorithm, and *artists* who want to create stunning videos from a piece of music. So it's quite natural to split the
+project into two deliverables: a desktop simulator for researchers and a web portal for artists, both of which depend
+on the core module including audio processing/analyzing functionalities. I chose Java Spring Roo 1.2 as my framework,
+mainly for its rapid web application development capabilities.
+
+****Core****
+
+This module mainly consists of the *domain* 
