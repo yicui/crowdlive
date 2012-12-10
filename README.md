@@ -25,5 +25,8 @@ number indicates the actual audio frame index. Of course, the visual cue can be 
 
 One funny thing is, everytime I showed my colored-square video to my UMG friend, I can sense his dissatisfaction. 
 This usually triggered a speech of mine on the great challenge this problem and how fast we are improving. But then I
-found out he was mostly complaining about the aesthetics of my visual presentation, Duh! We were 
+found out he was mostly complaining about the aesthetics of my visual presentation, Duh! We were on thinking different 
+tracks, me on the accuracy of the algorithm and him on how amazing the app should look. Then it occured to me that a
+tool like http://slides.com should be very helpful here: it leave artists alone to try out various visual effects,
+until they are happy with what they see.
 
