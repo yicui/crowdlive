@@ -42,6 +42,27 @@ project into two deliverables: a desktop simulator for researchers and a web por
 on the core module including audio processing/analyzing functionalities. I chose Java Spring Roo 1.2 as my framework,
 mainly for its rapid web application development capabilities.
 
-****Core****
+####Core
 
-This module mainly consists of the *domain* 
+This module mainly consists of three packages. The *domain* package contains all basic domain entity beans, such as
+Audio, Video, Image, etc. The *algo* package houses all the Filter classes, each of which implements a basic 
+processing functionality, such as Fourier transformation, finding order statistics, finding maximum/minimum, etc. 
+You can feel free to devise your algorithm by freely combining these filters. The *io* package is responsile to read in
+audio files of different formats and write out video files. This module is pure POJO, which is always a pleasure to code.
+I am largely done except the video creation part. All classes are unit-tested.
+
+####Desktop
+
+This module mainly consists of two packages. The *charting* package contains all classes visualizing the audio data
+and its processing result. The *gui* package contains all GUI widgets. I choose Spring Rich Client 1.1.0 to save my time
+on layout design and widget creation. But ironically its configuration cost a lot more time than expected. But I think
+I am getting there.
+
+####Web
+
+I haven't worked on this module yet. When I do, I hope Spring Roo can deliver what it says it can deliver. This can 
+grow out to a full-fledged website, but I'll just realize the very baseline here. The story will be a user uploads an
+audio file (WAV only as of now), then browses the image gallery to choose set of images he/she wants to showcase, selects
+"looping" or "shuffling", finally clicks "Create Video". This will trigger the algorithm to process the incoming audio,
+insert gifs as visual cues, and upload the resulting video to YouTube. Also each user can see from her account
+the audio she has uploaded and all her video creations. Users are also welcomed to enrich the image gallery.
